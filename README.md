@@ -147,13 +147,6 @@ http://localhost:5011
 
 Upload an image, select a model, and start the upscaling process.
 
-## Credits
-
-* Real-ESRGAN by Xintao Wang and contributors
-* NCNN Vulkan backend
-* Flask web interface
-
-
 ## GPU Verification
 
 Before running Real-ESRGAN, verify that Vulkan can detect your GPU.
@@ -202,3 +195,23 @@ deviceName        = AMD Radeon RX 6600
 ```
 
 If the GPU name is displayed, Vulkan has successfully detected the GPU and Real-ESRGAN can use hardware acceleration.
+
+## Credits
+
+This project is a lightweight web interface built on top of Real-ESRGAN NCNN Vulkan.
+
+### Original Projects
+
+- Real-ESRGAN by Xintao Wang and contributors  
+  https://github.com/xinntao/Real-ESRGAN
+
+- Real-ESRGAN NCNN Vulkan (portable Vulkan implementation)  
+  https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan
+
+### Technologies Used
+
+- Flask
+- Python
+- Vulkan
+- NCNN
+- Real-ESRGAN
