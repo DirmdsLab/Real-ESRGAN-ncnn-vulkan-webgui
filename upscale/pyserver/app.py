@@ -11,10 +11,29 @@ from PIL import Image
 app = Flask(__name__)
 
 # Path Configuration
-BASE_DIR = "/home/shiro/upscale/realesrgan-ncnn-vulkan-20220424-ubuntu"
-BIN_PATH = os.path.join(BASE_DIR, "realesrgan-ncnn-vulkan")
-INPUT_DIR = os.path.join(BASE_DIR, "input")
-OUTPUT_DIR = os.path.join(BASE_DIR, "output")
+
+SERVER_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR = os.path.dirname(SERVER_DIR)
+
+ESRGAN_DIR = os.path.join(
+    ROOT_DIR,
+    "realesrgan-ncnn-vulkan-20220424-ubuntu"
+)
+
+BIN_PATH = os.path.join(
+    ESRGAN_DIR,
+    "realesrgan-ncnn-vulkan"
+)
+
+INPUT_DIR = os.path.join(SERVER_DIR, "input")
+OUTPUT_DIR = os.path.join(SERVER_DIR, "output")
+
+# Validate binary
+
+if not os.path.isfile(BIN_PATH):
+    raise FileNotFoundError(
+        f"Real-ESRGAN binary not found: {BIN_PATH}"
+    )
 
 # STRICT SECURITY WHITELISTS
 ALLOWED_MODELS = [
@@ -88,7 +107,7 @@ def stream_upscale():
                 stderr=subprocess.STDOUT,
                 text=True,
                 bufsize=1,
-                cwd=BASE_DIR
+                cwd=ESRGAN_DIR
             )
             
             for line in process.stdout:
@@ -160,5 +179,19 @@ def download_zip():
     )
 
 if __name__ == '__main__':
-    print("Cleanup: 'input/' and 'output/' folders have been cleared.")
-    app.run(host='0.0.0.0', port=5011, debug=True)
+    print("===================================")
+    print("Real-ESRGAN WebGUI")
+    print("===================================")
+    print(f"SERVER_DIR : {SERVER_DIR}")
+    print(f"ROOT_DIR   : {ROOT_DIR}")
+    print(f"ESRGAN_DIR : {ESRGAN_DIR}")
+    print(f"BIN_PATH   : {BIN_PATH}")
+    print(f"INPUT_DIR  : {INPUT_DIR}")
+    print(f"OUTPUT_DIR : {OUTPUT_DIR}")
+    print("===================================")
+
+    app.run(
+        host="0.0.0.0",
+        port=5011,
+        debug=False
+    )
