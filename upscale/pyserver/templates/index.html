@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Upscaler</title>
+    <style>
+        :root {
+            --vscode-bg: #1e1e1e;
+            --vscode-sidebar: #252526;
+            --vscode-terminal: #1e1e1e;
+            --vscode-border: #3c3c3c;
+            --vscode-text: #cccccc;
+            --vscode-text-bright: #ffffff;
+            --vscode-blue: #0e639c;
+            --vscode-blue-hover: #1177bb;
+            --vscode-green: #388a34;
+            --vscode-green-hover: #43a047;
+            --vscode-red: #a83232;
+            --vscode-orange: #d17a24;
+            --vscode-orange-hover: #e58729;
+        }
+
+        body {
+            background-color: var(--vscode-sidebar);
+            color: var(--vscode-text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 850px;
+        }
+
+        h2 {
+            color: var(--vscode-text-bright);
+            font-weight: 500;
+            margin-top: 0;
+            margin-bottom: 25px;
+            letter-spacing: -0.5px;
+        }
+
+        h3 {
+            color: var(--vscode-text-bright);
+            font-weight: 500;
+            font-size: 16px;
+            margin-top: 30px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .box {
+            background-color: var(--vscode-bg);
+            padding: 24px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border: 1px solid var(--vscode-border);
+        }
+
+        .flex-menu {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        select {
+            background-color: var(--vscode-sidebar);
+            color: var(--vscode-text-bright);
+            border: 1px solid var(--vscode-border);
+            padding: 10px 14px;
+            border-radius: 4px;
+            font-size: 13px;
+            outline: none;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        select:focus {
+            border-color: var(--vscode-blue);
+        }
+
+        .btn {
+            color: var(--vscode-text-bright);
+            border: none;
+            padding: 10px 18px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 13px;
+            font-family: inherit;
+            transition: background-color 0.2s, opacity 0.2s;
+        }
+
+        .btn-primary { background-color: var(--vscode-blue); }
+        .btn-primary:hover { background-color: var(--vscode-blue-hover); }
+        
+        .btn-success { background-color: var(--vscode-green); }
+        .btn-success:hover { background-color: var(--vscode-green-hover); }
+        
+        .btn-danger { background-color: var(--vscode-red); }
+        .btn-danger:hover { opacity: 0.9; }
+        
+        .btn-warning { background-color: var(--vscode-orange); }
+        .btn-warning:hover { background-color: var(--vscode-orange-hover); }
+        
+        .btn-zip { background-color: #6a1b9a; margin-bottom: 16px; }
+        .btn-zip:hover { opacity: 0.9; }
+
+        .btn-sm { padding: 6px 12px; font-size: 11px; }
+        
+        button:disabled {
+            background-color: #333333 !important;
+            color: #777777 !important;
+            cursor: not-allowed;
+            border: 1px solid #444444;
+        }
+
+        .file-list {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0 0 0;
+            border-top: 1px solid var(--vscode-border);
+            padding-top: 15px;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--vscode-sidebar);
+            padding: 10px 14px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            border: 1px solid var(--vscode-border);
+            font-size: 13px;
+        }
+
+        .file-item-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .thumbnail {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid var(--vscode-border);
+            margin-right: 14px;
+            background-color: #151515;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .thumbnail:hover {
+            opacity: 0.8;
+        }
+
+        .file-info {
+            color: var(--vscode-text-bright);
+            font-weight: 500;
+        }
+
+        .file-size {
+            color: #777777;
+            font-size: 12px;
+            margin-top: 2px;
+        }
+
+        #terminal {
+            background-color: var(--vscode-terminal);
+            color: #85e485;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 16px;
+            height: 320px;
+            overflow-y: auto;
+            border-radius: 4px;
+            border: 1px solid var(--vscode-border);
+            white-space: pre-wrap;
+        }
+
+        .download-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--vscode-sidebar);
+            padding: 10px 14px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            border: 1px solid var(--vscode-border);
+            font-size: 13px;
+        }
+
+        .download-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .download-link {
+            color: #4fc1ff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: text-decoration 0.2s;
+        }
+
+        .download-link:hover {
+            text-decoration: underline;
+        }
+
+        .compare-link {
+            color: #4ec9b0;
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .compare-link:hover {
+            text-decoration: underline;
+        }
+
+        #fileInput { display: none; }
+        
+        .empty-text {
+            color: #666666;
+            font-style: italic;
+            font-size: 13px;
+        }
+
+        /* Lightbox Preview Modal Layout */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(10, 10, 10, 0.9);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 4px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            border: 1px solid var(--vscode-border);
+        }
+
+        /* FULLSCREEN COMPARE POPUP LAYER */
+        .compare-fullscreen {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #0b0b0b;
+            flex-direction: column;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .compare-header {
+            height: 50px;
+            background-color: #1a1a1a;
+            border-bottom: 1px solid var(--vscode-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-sizing: border-box;
+            z-index: 10;
+        }
+
+        .compare-title {
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 40%;
+        }
+
+        .compare-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .zoom-control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--vscode-text);
+            font-size: 12px;
+        }
+
+        .zoom-slider {
+            width: 120px;
+            accent-color: var(--vscode-blue);
+            cursor: pointer;
+        }
+
+        .compare-workspace {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            height: calc(100% - 50px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .compare-pan-frame {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform-origin: center center;
+        }
+
+        .slider-viewport {
+            position: relative;
+            width: auto;
+            height: auto;
+            max-width: 95vw;
+            max-height: 85vh;
+            display: inline-block;
+        }
+
+        .layer-img {
+            display: block;
+            max-width: 95vw;
+            max-height: 85vh;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            pointer-events: none;
+        }
+
+        /* Before Layer Frame (Left side crop) */
+        .layer-before {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 2;
+        }
+
+        .layer-before .layer-img {
+            max-width: none;
+            max-height: none;
+            width: var(--viewport-w, auto);
+            height: var(--viewport-h, auto);
+        }
+
+        .layer-after {
+            z-index: 1;
+        }
+
+        .range-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+            background: transparent;
+            outline: none;
+            margin: 0;
+            cursor: ew-resize;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        .slider-divider {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 1.5px;
+            background-color: #ffffff;
+            box-shadow: 0 0 4px rgba(0,0,0,0.8);
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        /* FIX BADGE POSITIONS: Dipisah ke luar agar tidak ikut terpotong oleh gerak slider */
+        .badge {
+            position: absolute;
+            top: 15px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #ffffff;
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: 500;
+            border-radius: 3px;
+            text-transform: uppercase;
+            pointer-events: none;
+            z-index: 6; /* Atur di atas slider range tracking */
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+        .badge-before { left: 15px; }
+        .badge-after { right: 15px; }
+        
+        .close-btn {
+            background: #2d2d2d;
+            color: #ffffff;
+            border: 1px solid var(--vscode-border);
+            padding: 6px 14px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .close-btn:hover { background: var(--vscode-red); border-color: transparent; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Anime Upscaler</h2>
+    
+    <div class="box">
+        <div class="flex-menu">
+            <select id="modelSelect">
+                <option value="realesrgan-x4plus-anime" selected>realesrgan-x4plus-anime (Default)</option>
+                <option value="realesr-animevideov3">realesr-animevideov3</option>
+                <option value="realesrgan-x4plus">realesrgan-x4plus</option>
+                <option value="realesrnet-x4plus">realesrnet-x4plus</option>
+            </select>
+
+            <select id="scaleSelect">
+                <option value="2">Scale: 2x</option>
+                <option value="3">Scale: 3x</option>
+                <option value="4" selected>Scale: 4x (Default)</option>
+            </select>
+
+            <label for="fileInput" class="btn btn-primary" id="addFileLabel" style="cursor: pointer;">
+                Add Images
+            </label>
+            <input type="file" id="fileInput" multiple accept="image/*">
+            
+            <button id="upscaleBtn" class="btn btn-success" onclick="startProcess()" disabled>
+                Start Upscale
+            </button>
+
+            <button id="clearBtn" class="btn btn-warning" onclick="clearAllData()">
+                Clear All
+            </button>
+        </div>
+
+        <h3>Upload Queue</h3>
+        <ul id="queueList" class="file-list">
+            <li class="empty-text">No files selected.</li>
+        </ul>
+    </div>
+
+    <h3>Live Process Log</h3>
+    <div class="box">
+        <div id="terminal">Waiting for files to be added to the queue...</div>
+    </div>
+
+    <h3>Upscaled Results</h3>
+    <div class="box" id="downloadSection" style="display: none;">
+        <button id="downloadZipBtn" class="btn btn-zip" onclick="downloadAllAsZip()" style="display: none;">
+            Download All (.zip)
+        </button>
+        <div id="downloadList"></div>
+    </div>
+</div>
+
+<div id="imageModal" class="modal" onclick="closeModal()">
+    <img id="modalImg" class="modal-content" src="" alt="Full View" onclick="event.stopPropagation()">
+</div>
+
+<div id="compareLayer" class="compare-fullscreen">
+    <div class="compare-header">
+        <div class="compare-title" id="compareTitleTxt">Image Comparison View</div>
+        <div class="compare-controls">
+            <div class="zoom-control-group">
+                <span>Zoom:</span>
+                <input type="range" min="1" max="5" step="0.1" value="1" class="zoom-slider" id="zoomRangeInput" oninput="applyZoom(this.value)">
+                <span id="zoomValBadge">1.0x</span>
+            </div>
+            <button class="close-btn" onclick="closeCompareLayer()">Close View</button>
+        </div>
+    </div>
+    
+    <div class="compare-workspace" id="workspaceArea" onmousedown="startPan(event)" onmousemove="executePan(event)" onmouseup="stopPan()" onmouseleave="stopPan()">
+        <div class="compare-pan-frame" id="panFrame">
+            <div class="slider-viewport" id="viewportBox">
+                
+                <div class="badge badge-before">Original</div>
+                <div class="badge badge-after">Upscaled</div>
+
+                <div class="layer-before" id="clipBeforeBox">
+                    <img class="layer-img" id="layerImgBefore" src="" alt="Original">
+                </div>
+                
+                <div class="layer-after">
+                    <img class="layer-img" id="layerImgAfter" src="" alt="Upscaled">
+                </div>
+                
+                <div class="slider-divider" id="simpleDividerLine"></div>
+                
+                <input type="range" min="0" max="100" value="50" class="range-overlay" id="splitInputRange" oninput="adjustSplitValue(this.value)">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let fileQueue = []; 
+    let successfulFiles = []; 
+    
+    const fileInput = document.getElementById('fileInput');
+    const queueList = document.getElementById('queueList');
+    const upscaleBtn = document.getElementById('upscaleBtn');
+    const terminal = document.getElementById('terminal');
+    const modelSelect = document.getElementById('modelSelect');
+    const scaleSelect = document.getElementById('scaleSelect');
+    const downloadZipBtn = document.getElementById('downloadZipBtn');
+    const imageModal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImg');
+    
+    // Compare Elements
+    const compareLayer = document.getElementById('compareLayer');
+    const layerImgBefore = document.getElementById('layerImgBefore');
+    const layerImgAfter = document.getElementById('layerImgAfter');
+    const clipBeforeBox = document.getElementById('clipBeforeBox');
+    const simpleDividerLine = document.getElementById('simpleDividerLine');
+    const splitInputRange = document.getElementById('splitInputRange');
+    const compareTitleTxt = document.getElementById('compareTitleTxt');
+    
+    // Zoom and Pan State
+    const panFrame = document.getElementById('panFrame');
+    const zoomRangeInput = document.getElementById('zoomRangeInput');
+    const zoomValBadge = document.getElementById('zoomValBadge');
+    const viewportBox = document.getElementById('viewportBox');
+
+    let currentZoom = 1;
+    let isDragging = false;
+    let startX = 0, startY = 0;
+    let posX = 0, posY = 0;
+
+    fileInput.addEventListener('change', function() {
+        for (let i = 0; i < this.files.length; i++) {
+            const file = this.files[i];
+            const isDuplicate = fileQueue.some(f => f.name === file.name && f.size === file.size);
+            if (!isDuplicate) {
+                fileQueue.push(file);
+            }
+        }
+        this.value = '';
+        renderQueue();
+    });
+
+    function renderQueue(isProcessing = false) {
+        queueList.innerHTML = '';
+        if (fileQueue.length === 0) {
+            queueList.innerHTML = '<li class="empty-text">No files selected.</li>';
+            upscaleBtn.disabled = true;
+            return;
+        }
+
+        fileQueue.forEach((file, index) => {
+            const li = document.createElement('li');
+            li.className = 'file-item';
+            
+            const objectUrl = URL.createObjectURL(file);
+            const removeButtonHtml = isProcessing ? '' : `<button class="btn btn-danger btn-sm" onclick="removeFromQueue(${index})">Remove</button>`;
+            
+            li.innerHTML = `
+                <div class="file-item-left">
+                    <img src="${objectUrl}" class="thumbnail" alt="Preview" onclick="openModal('${objectUrl}')">
+                    <div>
+                        <div class="file-info">${file.name}</div>
+                        <div class="file-size">${(file.size / 1024).toFixed(1)} KB</div>
+                    </div>
+                </div>
+                ${removeButtonHtml}
+            `;
+            queueList.appendChild(li);
+        });
+        upscaleBtn.disabled = isProcessing;
+        
+        // FIX BUG: Jangan mengunci dropdown menu ketika data dimasukkan atau siap diproses
+        if(!isProcessing) {
+            modelSelect.disabled = false;
+            scaleSelect.disabled = false;
+        }
+    }
+
+    function removeFromQueue(index) {
+        fileQueue.splice(index, 1);
+        renderQueue();
+    }
+
+    function clearAllData() {
+        fileQueue = [];
+        successfulFiles = []; 
+        renderQueue();
+        terminal.innerHTML = "Waiting for files to be added to the queue...";
+        document.getElementById('downloadList').innerHTML = "";
+        downloadZipBtn.style.display = 'none';
+        document.getElementById('downloadSection').style.display = 'none';
+        
+        // FIX BUG: Kembalikan pilihan dropdown model & scale ke default awal saat Clear
+        modelSelect.value = "realesrgan-x4plus-anime";
+        scaleSelect.value = "4";
+        modelSelect.disabled = false;
+        scaleSelect.disabled = false;
+    }
+
+    function logToTerminal(text) {
+        if (text.includes('%')) {
+            const lines = terminal.innerHTML.split('\n');
+            if (lines.length > 0 && lines[lines.length - 2].includes('%')) {
+                lines[lines.length - 2] = text;
+                terminal.innerHTML = lines.join('\n');
+            } else {
+                terminal.innerHTML += text + '\n';
+            }
+        } else {
+            terminal.innerHTML += text + '\n';
+        }
+        terminal.scrollTop = terminal.scrollHeight;
+    }
+
+    async function startProcess() {
+        if (fileQueue.length === 0) return;
+
+        renderQueue(true); 
+        document.getElementById('clearBtn').disabled = true;
+        modelSelect.disabled = true; // Hanya kunci ketika GPU sedang aktif memproses streaming
+        scaleSelect.disabled = true;
+        downloadZipBtn.style.display = 'none'; 
+        document.getElementById('addFileLabel').style.pointerEvents = 'none';
+        document.getElementById('addFileLabel').style.opacity = '0.5';
+
+        terminal.innerHTML = "[INFO] Uploading files to server...\n";
+
+        const formData = new FormData();
+        fileQueue.forEach(file => formData.append('files', file));
+
+        let uploadedNames = [];
+        try {
+            const response = await fetch('/upload', { method: 'POST', body: formData });
+            const data = await response.json();
+            
+            if (data.success) {
+                uploadedNames = data.files;
+                logToTerminal(`[SUCCESS] Upload complete. Preparing GPU processing...\n`);
+            } else {
+                logToTerminal(`[ERROR] Upload failed: ${data.error}`);
+                resetUI();
+                return;
+            }
+        } catch (err) {
+            logToTerminal(`[ERROR] Network error during upload: ${err}`);
+            resetUI();
+            return;
+        }
+
+        document.getElementById('downloadSection').style.display = 'block';
+        
+        // Selalu mengambil nilai terbaru dari dropdown sesaat sebelum proses dimulai
+        const selectedModel = modelSelect.value;
+        const selectedScale = scaleSelect.value;
+        
+        const params = new URLSearchParams();
+        uploadedNames.forEach(f => params.append('files', f));
+        params.append('model', selectedModel);
+        params.append('scale', selectedScale);
+
+        const eventSource = new EventSource(`/stream-upscale?${params.toString()}`);
+
+        eventSource.onmessage = function(event) {
+            const msg = event.data;
+
+            if (msg.startsWith('SUCCESS:')) {
+                const payload = msg.split('SUCCESS:')[1];
+                const [originalName, outName] = payload.split('|');
+                
+                logToTerminal(`\n[SUCCESS] Finished: ${outName}`);
+                
+                successfulFiles.push(outName); 
+                addDownloadLink(originalName, outName);
+                
+                if (successfulFiles.length > 0) {
+                    downloadZipBtn.style.display = 'inline-block';
+                }
+            } else if (msg.startsWith('FAILED:')) {
+                const fileFailed = msg.split('FAILED:')[1];
+                logToTerminal(`\n[ERROR] Failed to process: ${fileFailed}`);
+            } else if (msg === 'ALL_DONE') {
+                logToTerminal('\n[INFO] All tasks completed.');
+                eventSource.close();
+                resetUI();
+            } else {
+                logToTerminal(msg);
+            }
+        };
+
+        eventSource.onerror = function() {
+            logToTerminal('\n[WARNING] Connection lost or server error.');
+            eventSource.close();
+            resetUI();
+        };
+    }
+
+    function resetUI() {
+        document.getElementById('clearBtn').disabled = false;
+        modelSelect.disabled = false;
+        scaleSelect.disabled = false;
+        document.getElementById('addFileLabel').style.pointerEvents = 'auto';
+        document.getElementById('addFileLabel').style.opacity = '1';
+        renderQueue(false); 
+    }
+
+    function addDownloadLink(originalName, filename) {
+        const list = document.getElementById('downloadList');
+        const div = document.createElement('div');
+        div.className = 'download-item';
+        
+        const fileUrl = `/download/${filename}`;     
+        const previewUrl = `/preview/output/${filename}`;   
+        
+        div.innerHTML = `
+            <div class="file-item-left">
+                <img src="${previewUrl}" class="thumbnail" alt="Output Preview" onclick="openModal('${fileUrl}')">
+                <span class="file-info">${filename}</span>
+            </div>
+            <div class="download-actions">
+                <span class="compare-link" onclick="openCompareLayer('${originalName}', '${filename}')">Compare</span>
+                <a class="download-link" href="${fileUrl}" target="_blank">Download</a>
+            </div>
+        `;
+        list.appendChild(div);
+    }
+
+    function downloadAllAsZip() {
+        if (successfulFiles.length === 0) return;
+        
+        const params = new URLSearchParams();
+        successfulFiles.forEach(f => params.append('files', f));
+        
+        window.location.href = `/download-zip?${params.toString()}`;
+    }
+
+    function openModal(src) {
+        modalImg.src = src;
+        imageModal.style.display = 'flex';
+    }
+
+    function closeModal() {
+        imageModal.style.display = 'none';
+        modalImg.src = '';
+    }
+
+    /* --- FULLSCREEN COMPARE LAYER CONTROLLER --- */
+    function openCompareLayer(originalName, upscaledName) {
+        compareTitleTxt.innerText = `Comparing: ${originalName}`;
+        
+        layerImgBefore.src = `/input/${originalName}`;
+        layerImgAfter.src = `/download/${upscaledName}`;
+        
+        currentZoom = 1;
+        zoomRangeInput.value = 1;
+        zoomValBadge.innerText = "1.0x";
+        
+        posX = 0;
+        posY = 0;
+        applyTransformations();
+        
+        splitInputRange.value = 50;
+        adjustSplitValue(50);
+        
+        compareLayer.style.display = 'flex';
+        
+        layerImgAfter.onload = function() {
+            setTimeout(() => {
+                const rWidth = layerImgAfter.clientWidth;
+                const rHeight = layerImgAfter.clientHeight;
+                
+                viewportBox.style.width = `${rWidth}px`;
+                viewportBox.style.height = `${rHeight}px`;
+                viewportBox.style.setProperty('--viewport-w', `${rWidth}px`);
+                viewportBox.style.setProperty('--viewport-h', `${rHeight}px`);
+            }, 50);
+        };
+    }
+
+    function closeCompareLayer() {
+        compareLayer.style.display = 'none';
+        layerImgBefore.src = '';
+        layerImgAfter.src = '';
+    }
+
+    function adjustSplitValue(value) {
+        clipBeforeBox.style.width = `${value}%`;
+        simpleDividerLine.style.left = `${value}%`;
+    }
+
+    function applyZoom(val) {
+        currentZoom = parseFloat(val);
+        zoomValBadge.innerText = `${currentZoom.toFixed(1)}x`;
+        if (currentZoom === 1) {
+            posX = 0;
+            posY = 0;
+        }
+        applyTransformations();
+    }
+
+    function applyTransformations() {
+        panFrame.style.transform = `translate(${posX}px, ${posY}px) scale(${currentZoom})`;
+        
+        if (currentZoom > 1) {
+            document.getElementById('workspaceArea').style.cursor = 'move';
+        } else {
+            document.getElementById('workspaceArea').style.cursor = 'default';
+        }
+    }
+
+    /* Drag & Pan Frame */
+    function startPan(e) {
+        if (currentZoom <= 1) return;
+        if (e.target === splitInputRange) return; 
+        
+        isDragging = true;
+        startX = e.clientX - posX;
+        startY = e.clientY - posY;
+    }
+
+    function executePan(e) {
+        if (!isDragging) return;
+        posX = e.clientX - startX;
+        posY = e.clientY - startY;
+        applyTransformations();
+    }
+
+    function stopPan() {
+        isDragging = false;
+    }
+</script>
+</body>
+</html>
