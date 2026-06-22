@@ -94,17 +94,15 @@ Start a container:
 podman run -dit \
     --name anime-upscale \
     -p 5011:5011 \
-    --device /dev/dri/card1:/dev/dri/card1 \
-    --device /dev/dri/renderD128:/dev/dri/renderD128 \
+    --device /dev/dri/card1 \
+    --device /dev/dri/renderD128 \
     -v $(pwd)/upscale:/upscale:Z \
     ubuntu:22.04 \
     bash -c "
-        apt update &&
-        apt install -y python3 python3-pip libgomp1 &&
-        pip3 install -r /upscale/requirements.txt &&
-        cd /upscale &&
-        chmod +x run.sh &&
-        ./run.sh
+        chmod +x /upscale/setup.sh \
+                 /upscale/start.sh \
+                 /upscale/run.sh &&
+        /upscale/start.sh
     "
 ```
 
