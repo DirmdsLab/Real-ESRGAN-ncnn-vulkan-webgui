@@ -97,7 +97,7 @@ podman run -dit \
     --device /dev/dri/card1 \
     --device /dev/dri/renderD128 \
     -v $(pwd)/upscale:/upscale:Z \
-    ubuntu:22.04 \
+    docker.io/library/ubuntu:22.04 \
     bash -c "
         chmod +x /upscale/setup.sh \
                  /upscale/start.sh \

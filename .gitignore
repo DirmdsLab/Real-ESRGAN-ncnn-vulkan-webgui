@@ -1,2 +1,6 @@
 upscale/pyserver/input
 upscale/pyserver/output
+
+source/*
+!source/realesrgan-ncnn-vulkan-20220424-ubuntu.zip
+!source/realesrgan-ncnn-vulkan-20220424-ubuntu.zip.sha256
